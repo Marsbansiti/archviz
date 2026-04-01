@@ -18,6 +18,31 @@
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--serif);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
 
+<img 
+  src="image-fallback.jpg"
+  srcset="image-small.jpg 480w, image-medium.jpg 800w, image-large.jpg 1200w"
+  sizes="(max-width: 600px) 480px, (max-width: 1000px) 800px, 1200px"
+  alt="Responsive landscape"
+  width="1200"
+  height="800">
+
+<picture>
+  <source srcset="image.avif" type="image/avif">
+  <source srcset="image.webp" type="image/webp">
+  <img src="image.jpg" alt="Optimized product image" width="800" height="600" loading="lazy">
+</picture>
+
+<img 
+  src="image-fallback.jpg"
+  srcset="image-small.jpg 480w, image-medium.jpg 800w, image-large.jpg 1200w"
+  sizes="(max-width: 600px) 480px, (max-width: 1000px) 800px, 1200px"
+  alt="Responsive landscape"
+  width="1200"
+  height="800">
+
+
+
+
 /* CURSOR */
 #cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .18s var(--ease),height .18s var(--ease)}
 #cur-ring{position:fixed;width:38px;height:38px;border-radius:50%;border:1px solid rgba(200,169,110,.4);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s var(--ease),height .35s var(--ease)}
@@ -41,32 +66,56 @@ nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to b
 .page.exit{opacity:0;transform:translateY(-12px)}
 
 /* ===================== HOME ===================== */
-.scenes-wrapper{position:relative;width:100%;scroll-snap-type:y mandatory;overflow-y:scroll;height:100vh;scrollbar-width:none}
-.scenes-wrapper::-webkit-scrollbar{display:none}
+.scenes-wrapper{position:relative;width:100%}
 .scenes-track{display:block;width:100%}
-.scene{width:100%;height:100vh;position:relative;overflow:hidden;scroll-snap-align:start;scroll-snap-stop:always}
+.scene{width:100%;height:100vh;position:relative;overflow:hidden}
 
 /* dots */
-.scene-dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:10px;transition:opacity .4s var(--ease)}
+.scene-dots{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:10px}
 .sdot{width:2px;height:28px;background:rgba(237,232,223,.2);cursor:none;transition:all .35s}
 .sdot.active{background:var(--gold);height:40px}
 
 /* arrows — hidden in vertical mode */
 .sarr{display:none}
 
-/* SCENE 1 */
+/* SCENE 1 — MASSIVE TYPOGRAPHIC HERO */
 .s1-bg{position:absolute;inset:0;overflow:hidden}
 .s1-bg img{width:100%;height:100%;object-fit:cover;animation:kenburns 20s ease-in-out infinite alternate}
-.s1-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(8,8,10,.3) 0%,rgba(8,8,10,.75) 100%)}
-.s1-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;text-align:center;padding:0 5%}
-.s1-eye{font-family:var(--mono);font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;animation:fadeUp .8s .4s var(--ease) forwards}
-.s1-h{font-family:var(--display);font-size:clamp(58px,9vw,138px);letter-spacing:.06em;line-height:.9;color:var(--text);text-transform:uppercase;opacity:0;animation:fadeUp .9s .55s var(--ease) forwards}
-.s1-sub{font-family:var(--serif);font-style:italic;font-size:clamp(24px,3.5vw,52px);font-weight:200;letter-spacing:.02em;color:rgba(237,232,223,.6);display:block;margin-top:12px;opacity:0;animation:fadeUp .8s .7s var(--ease) forwards}
-.s1-vline{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);margin:32px auto 0;opacity:0;animation:fadeIn .8s .95s var(--ease) forwards}
-.s1-scroll{position:absolute;bottom:44px;right:52px;z-index:2;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;animation:fadeIn .8s 1.1s var(--ease) forwards;cursor:none}
-.s1-scroll-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text-muted);writing-mode:vertical-rl}
-.arr-line{width:1px;height:44px;background:var(--gold);animation:scrollDown 2.4s 1.5s ease-in-out infinite}
-.arr-tip{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:7px solid var(--gold);margin-top:-1px}
+.s1-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,8,10,.96) 0%,rgba(8,8,10,.62) 50%,rgba(8,8,10,.45) 100%)}
+
+/* Giant ghost bleed text behind everything */
+.s1-bleed{position:absolute;bottom:-0.06em;left:-0.01em;right:0;z-index:1;pointer-events:none;overflow:hidden;line-height:.82}
+.s1-bleed-word{display:block;font-family:var(--display);font-size:clamp(140px,24vw,380px);letter-spacing:-0.01em;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(200,169,110,.11);white-space:nowrap;opacity:0;animation:fadeIn 1.4s .15s var(--ease) forwards}
+
+/* Foreground content — bottom-left anchored */
+.s1-content{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;padding:0 52px 56px}
+
+/* Eyebrow */
+.s1-eye{font-family:var(--mono);font-size:9px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeUp .7s .5s var(--ease) forwards}
+.s1-eye::before{content:'';width:28px;height:1px;background:var(--gold)}
+
+/* MASSIVE headline */
+.s1-h{font-family:var(--display);font-size:clamp(100px,19vw,290px);letter-spacing:-0.01em;line-height:.84;color:var(--text);text-transform:uppercase;opacity:0;animation:fadeUp .9s .6s var(--ease) forwards;margin-left:-0.015em}
+
+/* Italic name */
+.s1-sub{font-family:var(--serif);font-style:italic;font-size:clamp(18px,2.2vw,32px);font-weight:200;letter-spacing:.06em;color:rgba(237,232,223,.52);display:block;margin-top:12px;opacity:0;animation:fadeUp .7s .78s var(--ease) forwards}
+
+/* Gold separator */
+.s1-vline{width:52px;height:1px;background:var(--gold);margin:20px 0 0;opacity:0;animation:fadeIn .7s .95s var(--ease) forwards}
+
+/* Right-side large ghost number */
+.s1-side-stat{position:absolute;right:52px;bottom:52px;z-index:2;text-align:right;opacity:0;animation:fadeIn .8s 1s var(--ease) forwards}
+.s1-side-stat-num{font-family:var(--display);font-size:clamp(52px,8vw,110px);letter-spacing:.02em;line-height:1;color:rgba(237,232,223,.1)}
+.s1-side-stat-label{font-family:var(--mono);font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-top:6px}
+
+/* Scroll CTA — sits left under headline */
+.s1-scroll{position:absolute;bottom:60px;left:52px;z-index:2;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeIn .7s 1.1s var(--ease) forwards;cursor:none;margin-top:20px}
+.s1-scroll-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text-muted)}
+.arr-line{width:44px;height:1px;background:var(--gold);animation:arrowPulse 2.4s 1.5s ease-in-out infinite}
+.arr-tip{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:7px solid var(--gold);margin-left:-1px}
+
+/* Top-right ghost coords */
+.s1-coords{position:absolute;top:100px;right:52px;z-index:2;font-family:var(--mono);font-size:8px;letter-spacing:.2em;color:rgba(237,232,223,.18);opacity:0;animation:fadeIn .8s 1.3s var(--ease) forwards;text-align:right;line-height:1.7}
 
 /* SCENE 2 */
 .s2-bg{position:absolute;inset:0}
@@ -175,19 +224,134 @@ nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to b
 .pc-sub{font-family:var(--mono);font-size:8px;color:var(--text-dim);letter-spacing:.12em}
 .pc-tag{font-family:var(--mono);font-size:7px;padding:3px 10px;border:1px solid rgba(200,169,110,.3);color:var(--gold);display:inline-block;margin-top:9px;letter-spacing:.15em;text-transform:uppercase}
 
-/* ===================== ABOUT ===================== */
+/* ===================== ABOUT — REDESIGNED ===================== */
 #page-about{background:var(--bg)}
-.ab-hero{height:100vh;position:relative;overflow:hidden;display:flex;align-items:flex-end}
-.ab-hero-bg{position:absolute;inset:0}
-.ab-hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:brightness(.25) saturate(.65)}
-.ab-hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(155deg,rgba(8,8,10,.97) 0%,rgba(8,8,10,.45) 50%,rgba(8,8,10,.82) 100%)}
-.ab-hero-content{position:relative;z-index:2;padding:0 52px 68px;width:100%}
+
+/* ── PROFILE SPLIT HERO ── */
+.ab-hero{
+  height:100vh;
+  min-height:600px;
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:52% 48%;
+}
+
+/* LEFT PORTRAIT PANEL */
+.ab-portrait-panel{
+  position:relative;
+  overflow:hidden;
+}
+.ab-portrait-panel img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 12%;
+  display:block;
+  /* Slightly warm, cinematic treatment */
+  filter:grayscale(.08) brightness(.82) contrast(1.06) saturate(1.1);
+  transition:transform 14s ease-in-out;
+}
+.ab-portrait-panel:hover img{transform:scale(1.04)}
+
+/* Gold corner frame accents on portrait */
+.ab-portrait-panel::before{
+  content:'';
+  position:absolute;
+  top:28px;left:28px;
+  width:50px;height:50px;
+  border-top:1px solid rgba(200,169,110,.55);
+  border-left:1px solid rgba(200,169,110,.55);
+  z-index:2;
+  pointer-events:none;
+}
+.ab-portrait-panel::after{
+  content:'';
+  position:absolute;
+  bottom:28px;right:28px;
+  width:50px;height:50px;
+  border-bottom:1px solid rgba(200,169,110,.55);
+  border-right:1px solid rgba(200,169,110,.55);
+  z-index:2;
+  pointer-events:none;
+}
+/* Gradient fade into right panel */
+.ab-portrait-fade{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to right, transparent 62%, rgba(8,8,10,.92) 100%);
+  z-index:1;
+  pointer-events:none;
+}
+/* Bottom fade */
+.ab-portrait-fade::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:35%;
+  background:linear-gradient(to top, rgba(8,8,10,.7) 0%, transparent 100%);
+}
+
+/* Portrait floating label — bottom left of image */
+.ab-portrait-label{
+  position:absolute;
+  bottom:44px;
+  left:36px;
+  z-index:3;
+}
+.ab-portrait-label-tag{
+  font-family:var(--mono);
+  font-size:8px;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:rgba(200,169,110,.75);
+  margin-bottom:8px;
+}
+.ab-portrait-label-num{
+  font-family:var(--display);
+  font-size:clamp(52px,7vw,96px);
+  letter-spacing:.02em;
+  line-height:1;
+  color:rgba(237,232,223,.08);
+}
+
+/* RIGHT CONTENT PANEL */
+.ab-hero-content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:52px 56px 60px 52px;
+  background:var(--bg);
+  border-left:1px solid var(--border);
+}
+
+/* Subtle ambient light from portrait side */
+.ab-hero-content::before{
+  content:'';
+  position:absolute;
+  top:0;bottom:0;left:0;
+  width:1px;
+  background:linear-gradient(to bottom, transparent, rgba(200,169,110,.2) 50%, transparent);
+}
+
 .ab-pre{font-family:var(--mono);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:16px}
-.ab-pre::before{content:'';width:30px;height:1px;background:var(--gold)}
-.ab-name{font-family:var(--display);font-size:clamp(64px,10.5vw,155px);letter-spacing:.03em;line-height:.86;text-transform:uppercase}
-.ab-name-sub{font-family:var(--serif);font-style:italic;font-size:clamp(30px,4.5vw,68px);font-weight:200;color:var(--gold);display:block;line-height:1.05;margin-top:6px}
-.ab-tagline{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-top:26px;display:flex;align-items:center;gap:16px}
-.ab-tagline::before{content:'';width:30px;height:1px;background:var(--border)}
+.ab-pre::before{content:'';width:24px;height:1px;background:var(--gold)}
+
+/* Very large name */
+.ab-name{font-family:var(--display);font-size:clamp(62px,9vw,138px);letter-spacing:.03em;line-height:.86;text-transform:uppercase}
+.ab-name-sub{font-family:var(--serif);font-style:italic;font-size:clamp(28px,3.8vw,58px);font-weight:200;color:var(--gold);display:block;line-height:1.05;margin-top:4px}
+
+.ab-tagline{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-top:24px;display:flex;align-items:center;gap:14px}
+.ab-tagline::before{content:'';width:24px;height:1px;background:var(--border)}
+
+/* Stats row */
+.ab-stats-row{display:flex;gap:0;margin-top:36px;padding-top:28px;border-top:1px solid var(--border)}
+.ab-stat{flex:1;padding-right:20px;border-right:1px solid var(--border)}
+.ab-stat:last-child{border-right:none;padding-right:0}
+.ab-stat-n{font-family:var(--display);font-size:clamp(28px,3.8vw,52px);letter-spacing:.02em;color:var(--text);line-height:1}
+.ab-stat-l{font-family:var(--mono);font-size:7px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-top:5px}
 
 /* 3-col full-bleed */
 .ab-cols{display:grid;grid-template-columns:1.35fr 1fr .9fr;border-top:1px solid var(--border)}
@@ -269,10 +433,13 @@ nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to b
   .home-feat{grid-template-columns:1fr;gap:52px;padding:64px 36px}
   .ab-cols{grid-template-columns:1fr 1fr}
   .ab-col:nth-child(3){grid-column:1/-1;border-right:none;border-top:1px solid var(--border)}
+  .ab-hero{grid-template-columns:48% 52%}
 }
 @media(max-width:768px){
   nav{padding:20px 24px}
-  .s1-scroll{right:24px}
+  .s1-scroll{left:24px;bottom:48px}
+  .s1-side-stat{right:24px}
+  .s1-coords{right:24px}
   .s2-portrait{display:none}
   .s2-content{padding:0 7% 0 6%}
   .s3-content{padding:88px 6%}
@@ -287,7 +454,10 @@ nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to b
   .pf{padding:14px 24px}
   .pg{grid-template-columns:1fr 1fr}
   .pc.wide{grid-column:span 2}
-  .ab-hero-content{padding:0 24px 52px}
+  /* About: stack vertically on mobile */
+  .ab-hero{grid-template-columns:1fr;grid-template-rows:55vh auto;height:auto}
+  .ab-portrait-panel{height:55vh}
+  .ab-hero-content{padding:36px 24px 44px;border-left:none;border-top:1px solid var(--border)}
   .ab-cols{grid-template-columns:1fr}
   .ab-col{padding:48px 24px;border-right:none;border-bottom:1px solid var(--border)}
   .ab-foot{padding:22px 24px;flex-direction:column;gap:10px;text-align:center}
@@ -325,15 +495,34 @@ nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to b
   <div class="scenes-wrapper" id="sw">
     <div class="scenes-track" id="st">
 
-      <!-- SCENE 1 -->
+      <!-- SCENE 1 — MASSIVE TYPOGRAPHIC HERO -->
       <div class="scene" id="sc0">
+        <!-- Background image -->
         <div class="s1-bg"><img src="https://iili.io/qbszOAJ.jpg" alt="Hero"></div>
+
+        <!-- Giant ghost bleed text (behind content) -->
+        <div class="s1-bleed" aria-hidden="true">
+          <span class="s1-bleed-word">PORTFOLIO</span>
+        </div>
+
+        <!-- Top-right ghost coordinates -->
+        <div class="s1-coords">52.3676° N · 4.9041° E<br>AMSTERDAM — NL</div>
+
+        <!-- Main foreground content, bottom-left anchored -->
         <div class="s1-content">
           <div class="s1-eye" data-en="Architectural Visualization Specialist" data-vn="Chuyên Gia Trực Quan Hóa Kiến Trúc">Architectural Visualization Specialist</div>
           <div class="s1-h">Portfolio</div>
           <div class="s1-sub">Mars Bansiti</div>
           <div class="s1-vline"></div>
         </div>
+
+        <!-- Right-side ghost stat -->
+        <div class="s1-side-stat">
+          <div class="s1-side-stat-num">28</div>
+          <div class="s1-side-stat-label">Projects</div>
+        </div>
+
+        <!-- Scroll CTA -->
         <div class="s1-scroll" onclick="nextScene()">
           <span class="s1-scroll-lbl" data-en="Explore" data-vn="Khám phá">Explore</span>
           <div class="arr-line"></div>
@@ -450,13 +639,43 @@ nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to b
 
 <!-- ========== ABOUT ========== -->
 <div class="page" id="page-about">
+
+  <!-- PROFILE SPLIT HERO -->
   <div class="ab-hero">
-    <div class="ab-hero-bg"><img src="https://iili.io/qbsfxqu.jpg" alt="Mars Bansiti"></div>
+
+    <!-- LEFT: Actual portrait photo, edge-to-edge -->
+    <div class="ab-portrait-panel">
+      <img src="https://iili.io/qbsfxqu.jpg" alt="Mars Bansiti">
+      <div class="ab-portrait-fade"></div>
+      <!-- Floating portrait label -->
+      <div class="ab-portrait-label">
+        <div class="ab-portrait-label-tag" data-en="Lead 3D Artist · ArchViz Specialist" data-vn="Nghệ Sĩ 3D Trưởng · Chuyên Gia ArchViz">Lead 3D Artist · ArchViz Specialist</div>
+        <div class="ab-portrait-label-num">MB</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Name, title, stats -->
     <div class="ab-hero-content">
       <div class="ab-pre" data-en="Lead 3D Artist &amp; Architectural Visualization Specialist" data-vn="Nghệ Sĩ 3D Trưởng &amp; Chuyên Gia Trực Quan Hóa Kiến Trúc">Lead 3D Artist &amp; Architectural Visualization Specialist</div>
       <div class="ab-name">Mars<span class="ab-name-sub">Bansiti</span></div>
       <div class="ab-tagline" data-en="5+ Years · India · Vietnam · Germany · Netherlands" data-vn="5+ Năm · Ấn Độ · Việt Nam · Đức · Hà Lan">5+ Years · India · Vietnam · Germany · Netherlands</div>
+      <!-- Stats -->
+      <div class="ab-stats-row">
+        <div class="ab-stat">
+          <div class="ab-stat-n">5+</div>
+          <div class="ab-stat-l" data-en="Years Intl." data-vn="Năm Qt.">Years Intl.</div>
+        </div>
+        <div class="ab-stat">
+          <div class="ab-stat-n">28</div>
+          <div class="ab-stat-l" data-en="Projects" data-vn="Dự Án">Projects</div>
+        </div>
+        <div class="ab-stat">
+          <div class="ab-stat-n">4</div>
+          <div class="ab-stat-l" data-en="Countries" data-vn="Quốc Gia">Countries</div>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <div class="ab-cols">
@@ -582,45 +801,34 @@ function showPage(n){
   setTimeout(initReveal,120);
 }
 
-/* SCENES — vertical snap scroll */
+/* SCENES — vertical scroll */
 let cs=0;
 function goScene(n){
   cs=Math.max(0,Math.min(n,2));
-  const sw=document.getElementById('sw');
-  sw.scrollTo({top:cs*window.innerHeight,behavior:'smooth'});
+  const scEl=document.getElementById('sc'+cs);
+  if(scEl)document.getElementById('page-home').scrollTo({top:scEl.offsetTop,behavior:'smooth'});
   document.querySelectorAll('.sdot').forEach((d,i)=>d.classList.toggle('active',i===cs));
 }
 function nextScene(){goScene(cs+1);}
 function prevScene(){goScene(cs-1);}
 function scrollBelow(){
-  document.getElementById('page-home').scrollTo({top:window.innerHeight,behavior:'smooth'});
+  const sw=document.getElementById('sw');
+  document.getElementById('page-home').scrollTo({top:sw.offsetTop+sw.offsetHeight,behavior:'smooth'});
 }
 document.querySelector('.s1-scroll').addEventListener('click',nextScene);
 
-/* Sync dots on scenes scroll */
-document.getElementById('sw').addEventListener('scroll',function(){
+/* Sync dots on scroll */
+document.getElementById('page-home').addEventListener('scroll',function(){
   const st=this.scrollTop,vh=window.innerHeight;
   const newScene=Math.min(2,Math.round(st/vh));
   if(newScene!==cs){cs=newScene;document.querySelectorAll('.sdot').forEach((d,i)=>d.classList.toggle('active',i===cs));}
-},{passive:true});
-
-/* Hide dots when scrolled below scenes */
-document.getElementById('page-home').addEventListener('scroll',function(){
-  const dots=document.querySelector('.scene-dots');
-  if(dots)dots.style.opacity=this.scrollTop>80?'0':'1';
 },{passive:true});
 
 (function(){
   const w=document.getElementById('sw');let sx=0,sy=0;
   w.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
   w.addEventListener('touchend',e=>{const dy=sy-e.changedTouches[0].clientY,dx=Math.abs(sx-e.changedTouches[0].clientX);if(Math.abs(dy)>44&&Math.abs(dy)>dx){dy>0?nextScene():prevScene();}},{passive:true});
-  document.addEventListener('keydown',e=>{
-    if(cp!=='home')return;
-    const ph=document.getElementById('page-home');
-    if(ph.scrollTop>80)return; // only nav scenes when in view
-    if(e.key==='ArrowDown'){e.preventDefault();nextScene();}
-    if(e.key==='ArrowUp'){e.preventDefault();prevScene();}
-  });
+  document.addEventListener('keydown',e=>{if(cp!=='home')return;if(e.key==='ArrowDown')nextScene();if(e.key==='ArrowUp')prevScene();});
 })();
 
 /* REEL */
