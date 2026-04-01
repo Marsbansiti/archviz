@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mars Bansiti — Architectural Visualization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;0,600;1,200;1,300;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08080A;--bg2:#0D0D0F;--surface:#131315;--border:rgba(255,255,255,0.07);
+  --text:#EDE8DF;--text-dim:rgba(237,232,223,0.5);--text-muted:rgba(237,232,223,0.22);
+  --gold:#C8A96E;--gold2:#7A5E35;
+  --serif:'Cormorant Garamond',Georgia,serif;--mono:'Space Mono',monospace;--display:'Bebas Neue','Cormorant Garamond',serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
+
+/* CURSOR */
+#cur{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--gold);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .18s var(--ease),height .18s var(--ease)}
+#cur-ring{position:fixed;width:38px;height:38px;border-radius:50%;border:1px solid rgba(200,169,110,.4);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s var(--ease),height .35s var(--ease)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:26px 52px;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+nav::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,10,.9) 0%,transparent 100%);pointer-events:none}
+.nav-logo{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--text);pointer-events:all;cursor:none;position:relative;z-index:1}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:36px;pointer-events:all;position:relative;z-index:1}
+.nav-links a{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color .25s;cursor:none;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--gold);transition:width .3s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:var(--gold)}
+.nav-links a.active::after,.nav-links a:hover::after{width:100%}
+.lang-btn{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--text-muted);cursor:none;border:1px solid var(--border);padding:5px 13px;transition:all .25s;pointer-events:all;background:transparent}
+.lang-btn:hover{color:var(--gold);border-color:var(--gold)}
+
+/* PAGE SYSTEM */
+.page{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transition:opacity .55s var(--ease),transform .55s var(--ease);transform:translateY(16px)}
+.page.active{opacity:1;pointer-events:all;transform:none}
+.page.exit{opacity:0;transform:translateY(-12px)}
+
+/* ===================== HOME ===================== */
+.scenes-wrapper{position:relative;width:100%;height:100vh;overflow:hidden}
+.scenes-track{display:flex;width:300%;height:100%;transition:transform .85s var(--ease);will-change:transform}
+.scene{flex:0 0 33.333%;height:100%;position:relative;overflow:hidden}
+
+/* dots */
+.scene-dots{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:20;display:flex;gap:10px}
+.sdot{width:28px;height:2px;background:rgba(237,232,223,.2);cursor:none;transition:all .35s}
+.sdot.active{background:var(--gold);width:40px}
+
+/* arrows */
+.sarr{position:absolute;top:50%;transform:translateY(-50%);z-index:20;width:48px;height:48px;border:1px solid rgba(237,232,223,.12);display:flex;align-items:center;justify-content:center;cursor:none;transition:all .3s;background:rgba(8,8,10,.3);backdrop-filter:blur(8px)}
+.sarr:hover{border-color:var(--gold)}
+.sarr.prev{left:28px}.sarr.next{right:28px}
+.sarr.hidden{opacity:0;pointer-events:none}
+.sarr svg{width:14px;height:14px;stroke:var(--text-dim);fill:none;stroke-width:1.5;transition:stroke .3s}
+.sarr:hover svg{stroke:var(--gold)}
+
+/* SCENE 1 */
+.s1-bg{position:absolute;inset:0;overflow:hidden}
+.s1-bg img{width:100%;height:100%;object-fit:cover;animation:kenburns 20s ease-in-out infinite alternate}
+.s1-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(8,8,10,.3) 0%,rgba(8,8,10,.75) 100%)}
+.s1-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2;text-align:center;padding:0 5%}
+.s1-eye{font-family:var(--mono);font-size:10px;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;opacity:0;animation:fadeUp .8s .4s var(--ease) forwards}
+.s1-h{font-family:var(--display);font-size:clamp(58px,9vw,138px);letter-spacing:.06em;line-height:.9;color:var(--text);text-transform:uppercase;opacity:0;animation:fadeUp .9s .55s var(--ease) forwards}
+.s1-sub{font-family:var(--serif);font-style:italic;font-size:clamp(24px,3.5vw,52px);font-weight:200;letter-spacing:.02em;color:rgba(237,232,223,.6);display:block;margin-top:12px;opacity:0;animation:fadeUp .8s .7s var(--ease) forwards}
+.s1-vline{width:1px;height:52px;background:linear-gradient(to bottom,var(--gold),transparent);margin:32px auto 0;opacity:0;animation:fadeIn .8s .95s var(--ease) forwards}
+.s1-scroll{position:absolute;bottom:44px;right:52px;z-index:2;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeIn .8s 1.1s var(--ease) forwards;cursor:none}
+.s1-scroll-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--text-muted)}
+.arr-line{width:52px;height:1px;background:var(--gold);animation:arrowPulse 2.4s 1.5s ease-in-out infinite}
+.arr-tip{width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:7px solid var(--gold);margin-left:-1px}
+
+/* SCENE 2 */
+.s2-bg{position:absolute;inset:0}
+.s2-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(.32) saturate(.8)}
+.s2-grad{position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,10,.88) 0%,rgba(8,8,10,.38) 45%,rgba(8,8,10,.65) 100%)}
+.s2-portrait{position:absolute;right:0;top:0;bottom:0;width:35%}
+.s2-portrait img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(.25) brightness(.65)}
+.s2-portrait::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(8,8,10,1) 0%,rgba(8,8,10,.2) 40%,transparent 70%);z-index:1}
+.s2-content{position:absolute;inset:0;z-index:2;display:flex;align-items:center;padding:0 9% 0 8%}
+.s2-inner{max-width:640px}
+.s2-num{font-family:var(--mono);font-size:9px;letter-spacing:.3em;color:var(--gold);margin-bottom:28px;display:flex;align-items:center;gap:14px}
+.s2-num::after{content:'';width:44px;height:1px;background:var(--gold2)}
+.s2-intro{font-family:var(--serif);font-size:clamp(22px,2.7vw,40px);font-weight:200;line-height:1.48;letter-spacing:-.01em;color:var(--text)}
+.s2-intro strong{font-weight:400;color:var(--gold)}
+.s2-intro em{font-style:italic;color:rgba(237,232,223,.78)}
+
+/* SCENE 3 */
+.s3-bg{position:absolute;inset:0}
+.s3-bg img{width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:brightness(.18) saturate(.55)}
+.s3-content{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:88px 7% 88px 8%}
+.s3-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:44px;display:flex;align-items:center;gap:16px}
+.s3-lbl::before{content:'';width:30px;height:1px;background:var(--gold)}
+.s3-manifesto{font-family:var(--serif);font-weight:200;line-height:1.5;color:rgba(237,232,223,.85);max-width:88%}
+.s3-big{font-size:clamp(32px,4.8vw,72px);line-height:1.05;color:var(--text);display:block;margin-bottom:.15em;letter-spacing:-.02em}
+.s3-body{font-size:clamp(17px,2.2vw,32px);display:block;margin-top:.6em}
+.s3-gold{color:var(--gold);font-style:italic}
+.s3-sig{margin-top:52px;display:flex;align-items:center;gap:18px}
+.s3-sig-line{width:38px;height:1px;background:var(--gold2)}
+.s3-sig-txt{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--text-muted);text-transform:uppercase}
+.s3-down{position:absolute;bottom:40px;right:52px;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:none;opacity:.65}
+.s3-down-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--text-muted);text-transform:uppercase;writing-mode:vertical-rl}
+.s3-down-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollDown 2.2s ease-in-out infinite}
+
+/* HOME — BELOW */
+.index-reel{padding:80px 0 72px}
+.reel-hd{padding:0 52px;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:44px}
+.reel-ttl{font-family:var(--serif);font-size:clamp(28px,3.5vw,50px);font-weight:200;letter-spacing:-.015em}
+.reel-ttl em{font-style:italic;color:var(--gold)}
+.reel-cnt{font-family:var(--mono);font-size:9px;color:var(--text-muted);letter-spacing:.22em}
+.reel-track{display:flex;gap:2px;overflow-x:auto;padding:0 52px 12px;scrollbar-width:none;cursor:grab;user-select:none}
+.reel-track::-webkit-scrollbar{display:none}
+.reel-track.grab{cursor:grabbing}
+.reel-item{flex:0 0 auto;width:265px;aspect-ratio:3/4;position:relative;overflow:hidden;background:var(--surface)}
+.reel-img{width:100%;height:100%;object-fit:cover;transition:transform .55s var(--ease),filter .4s;display:block}
+.reel-item:hover .reel-img{transform:scale(1.05);filter:brightness(.62)}
+.reel-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,10,.96) 0%,transparent 55%);opacity:0;transition:opacity .35s}
+.reel-item:hover .reel-ov{opacity:1}
+.reel-info{position:absolute;bottom:0;left:0;right:0;padding:20px 18px;transform:translateY(8px);opacity:0;transition:all .38s var(--ease)}
+.reel-item:hover .reel-info{transform:none;opacity:1}
+.reel-idx{font-family:var(--mono);font-size:8px;color:var(--gold);letter-spacing:.22em;margin-bottom:7px}
+.reel-name{font-size:14px;font-weight:300;line-height:1.25;color:var(--text)}
+.reel-loc{font-family:var(--mono);font-size:8px;color:var(--text-dim);letter-spacing:.12em;margin-top:5px}
+
+.home-feat{padding:88px 52px;display:grid;grid-template-columns:1.1fr 1fr;gap:88px;align-items:center;background:var(--bg2);border-top:1px solid var(--border)}
+.fl{font-family:var(--mono);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:14px}
+.fl::before{content:'';width:26px;height:1px;background:var(--gold)}
+.ft{font-family:var(--serif);font-size:clamp(30px,4vw,58px);font-weight:200;line-height:1.02;letter-spacing:-.02em}
+.ft em{font-style:italic;color:var(--gold)}
+.fb{font-size:16px;font-weight:300;line-height:1.82;color:var(--text-dim);margin-top:22px}
+.fcta{display:inline-flex;align-items:center;gap:14px;margin-top:34px;font-family:var(--mono);font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);cursor:none;transition:gap .3s}
+.fcta::after{content:'→';font-size:13px}
+.fcta:hover{gap:22px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.fg img{width:100%;object-fit:cover;display:block}
+.fg img:first-child{aspect-ratio:16/9;grid-column:1/-1}
+.fg img:nth-child(n+2){aspect-ratio:1}
+
+.disciplines{padding:88px 52px;border-top:1px solid var(--border)}
+.dg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:56px;border:1px solid var(--border)}
+.dc{padding:44px 34px;border-right:1px solid var(--border);background:var(--bg);transition:background .3s}
+.dc:last-child{border-right:none}
+.dc:hover{background:var(--surface)}
+.dn{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--gold);margin-bottom:24px}
+.dt{font-family:var(--serif);font-size:22px;font-weight:300;line-height:1.2;margin-bottom:14px}
+.db{font-size:14px;line-height:1.8;color:var(--text-dim);font-weight:300}
+
+.mq-bar{background:var(--gold);padding:13px 0;overflow:hidden}
+.mq-inner{display:flex;white-space:nowrap;animation:marquee 30s linear infinite}
+.mq-inner span{font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:rgba(8,8,10,.82);padding:0 28px}
+.mq-inner span.sep{color:rgba(8,8,10,.32)}
+
+/* ===================== PROJECTS ===================== */
+#page-projects{background:var(--bg)}
+.ph{padding:130px 52px 52px;border-bottom:1px solid var(--border)}
+.ph-row{display:flex;justify-content:space-between;align-items:flex-end}
+.ph-ttl{font-family:var(--display);font-size:clamp(52px,8.5vw,128px);letter-spacing:.04em;line-height:.88;text-transform:uppercase}
+.ph-ttl em{font-family:var(--serif);font-style:italic;font-size:clamp(32px,5vw,78px);font-weight:200;text-transform:none;color:var(--gold);display:block;line-height:1.05}
+.ph-stat{text-align:right}
+.ph-n{font-family:var(--display);font-size:76px;letter-spacing:.02em;color:rgba(237,232,223,.1);line-height:1}
+.ph-l{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--text-muted);margin-top:4px}
+.pf{padding:20px 52px;display:flex;gap:6px;flex-wrap:wrap;background:var(--bg);position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.fbtn{font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;padding:7px 16px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:none;transition:all .25s}
+.fbtn:hover{color:var(--text);border-color:rgba(255,255,255,.22)}
+.fbtn.active{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px}
+.pc{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--surface);cursor:none}
+.pc.wide{grid-column:span 2;aspect-ratio:16/9}
+.pc img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease),filter .4s;display:block}
+.pc:hover img{transform:scale(1.04);filter:brightness(.6)}
+.pc-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,10,.96) 0%,rgba(8,8,10,.15) 55%,transparent 100%);opacity:0;transition:opacity .4s}
+.pc:hover .pc-ov{opacity:1}
+.pc-info{position:absolute;bottom:0;left:0;right:0;padding:28px 24px;transform:translateY(10px);opacity:0;transition:all .4s var(--ease)}
+.pc:hover .pc-info{opacity:1;transform:none}
+.pc-idx{font-family:var(--mono);font-size:8px;color:var(--gold);letter-spacing:.22em;margin-bottom:8px}
+.pc-name{font-family:var(--serif);font-size:19px;font-weight:300;line-height:1.2;color:var(--text);margin-bottom:5px}
+.pc-sub{font-family:var(--mono);font-size:8px;color:var(--text-dim);letter-spacing:.12em}
+.pc-tag{font-family:var(--mono);font-size:7px;padding:3px 10px;border:1px solid rgba(200,169,110,.3);color:var(--gold);display:inline-block;margin-top:9px;letter-spacing:.15em;text-transform:uppercase}
+
+/* ===================== ABOUT ===================== */
+#page-about{background:var(--bg)}
+.ab-hero{height:100vh;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+.ab-hero-bg{position:absolute;inset:0}
+.ab-hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:brightness(.25) saturate(.65)}
+.ab-hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(155deg,rgba(8,8,10,.97) 0%,rgba(8,8,10,.45) 50%,rgba(8,8,10,.82) 100%)}
+.ab-hero-content{position:relative;z-index:2;padding:0 52px 68px;width:100%}
+.ab-pre{font-family:var(--mono);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:16px}
+.ab-pre::before{content:'';width:30px;height:1px;background:var(--gold)}
+.ab-name{font-family:var(--display);font-size:clamp(64px,10.5vw,155px);letter-spacing:.03em;line-height:.86;text-transform:uppercase}
+.ab-name-sub{font-family:var(--serif);font-style:italic;font-size:clamp(30px,4.5vw,68px);font-weight:200;color:var(--gold);display:block;line-height:1.05;margin-top:6px}
+.ab-tagline{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-top:26px;display:flex;align-items:center;gap:16px}
+.ab-tagline::before{content:'';width:30px;height:1px;background:var(--border)}
+
+/* 3-col full-bleed */
+.ab-cols{display:grid;grid-template-columns:1.35fr 1fr .9fr;border-top:1px solid var(--border)}
+.ab-col{padding:64px 52px;border-right:1px solid var(--border)}
+.ab-col:last-child{border-right:none}
+.ab-col-lbl{font-family:var(--mono);font-size:8px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:36px;display:flex;align-items:center;gap:12px}
+.ab-col-lbl::before{content:'';width:18px;height:1px;background:var(--gold)}
+
+.ab-bio{font-size:clamp(15px,1.5vw,19px);font-weight:200;line-height:1.84;color:var(--text-dim)}
+.ab-bio strong{color:var(--text);font-weight:300}
+.ab-bio em{color:var(--gold);font-style:italic}
+.ab-quote{margin-top:48px;padding-left:22px;border-left:2px solid var(--gold2);font-family:var(--serif);font-size:clamp(17px,1.9vw,26px);font-style:italic;font-weight:200;line-height:1.52;color:rgba(237,232,223,.65)}
+.ab-cbar{margin-top:52px;padding-top:34px;border-top:1px solid var(--border)}
+.ab-clbl{font-family:var(--mono);font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.ab-email{font-family:var(--serif);font-size:clamp(16px,2vw,26px);font-weight:300;color:var(--text)}
+.ab-elink{display:inline-flex;align-items:center;gap:12px;margin-top:14px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);cursor:none;border-bottom:1px solid var(--gold2);padding-bottom:4px;transition:gap .3s,border-color .3s;text-decoration:none}
+.ab-elink:hover{gap:18px;border-color:var(--gold)}
+.ab-elink::after{content:'→';font-size:11px}
+
+.tl-item{padding:20px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-per{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--gold);margin-bottom:7px}
+.tl-studio{font-family:var(--serif);font-size:17px;font-weight:300;color:var(--text);line-height:1.3}
+.tl-role{font-family:var(--serif);font-size:13px;font-weight:300;font-style:italic;color:var(--text-dim);margin-top:3px}
+.tl-loc{font-family:var(--mono);font-size:8px;color:var(--text-muted);letter-spacing:.12em;margin-top:5px}
+
+.sk-blk{margin-bottom:34px}
+.sk-lbl{font-family:var(--mono);font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px}
+.sk-tags{display:flex;flex-wrap:wrap;gap:6px}
+.sk-tag{font-family:var(--mono);font-size:8px;padding:5px 12px;border:1px solid var(--border);color:var(--text-dim);letter-spacing:.1em;transition:border-color .25s,color .25s}
+.sk-tag:hover{border-color:var(--gold);color:var(--text)}
+.edu-item{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.edu-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.edu-nm{font-family:var(--serif);font-size:15px;font-weight:300;color:var(--text)}
+.edu-dt{font-family:var(--mono);font-size:8px;color:var(--text-muted);letter-spacing:.12em;margin-top:3px}
+.ab-foot{padding:26px 52px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.ab-foot-copy{font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:var(--text-muted)}
+.ab-foot-tools{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--text-muted)}
+
+/* MODAL */
+.modal-back{position:fixed;inset:0;background:rgba(8,8,10,.97);z-index:2000;opacity:0;pointer-events:none;transition:opacity .4s}
+.modal-back.open{opacity:1;pointer-events:all}
+.modal{position:fixed;inset:0;z-index:2001;overflow-y:auto;opacity:0;transform:translateY(26px);transition:opacity .45s var(--ease),transform .45s var(--ease);pointer-events:none}
+.modal.open{opacity:1;transform:none;pointer-events:all}
+.modal-nav{position:sticky;top:0;padding:22px 52px;display:flex;justify-content:space-between;align-items:center;z-index:10;background:rgba(8,8,10,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.modal-tag{font-family:var(--mono);font-size:8px;letter-spacing:.22em;color:var(--gold)}
+.modal-x{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);cursor:none;border:1px solid var(--border);padding:8px 18px;transition:all .25s}
+.modal-x:hover{color:var(--gold);border-color:var(--gold)}
+.modal-body{padding:0 52px 88px}
+.modal-ttl{font-family:var(--serif);font-size:clamp(36px,5.5vw,86px);font-weight:200;letter-spacing:-.02em;line-height:.94;margin:44px 0 8px}
+.modal-ttl em{font-style:italic;color:var(--gold)}
+.modal-meta{display:flex;gap:44px;flex-wrap:wrap;padding-bottom:30px;border-bottom:1px solid var(--border);margin-bottom:38px}
+.mm{font-family:var(--mono);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted)}
+.mm strong{display:block;font-size:14px;font-family:var(--serif);font-weight:300;color:var(--text);letter-spacing:0;text-transform:none;margin-top:5px}
+.modal-desc{font-size:17px;font-weight:300;line-height:1.82;color:var(--text-dim);max-width:760px;margin-bottom:52px}
+.modal-gal{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.modal-gal img{width:100%;display:block;object-fit:cover;aspect-ratio:4/3}
+.modal-gal img:first-child{grid-column:1/-1;aspect-ratio:16/9}
+.modal-gal img:nth-child(5),.modal-gal img:nth-child(9){grid-column:1/-1;aspect-ratio:16/9}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.visible{opacity:1;transform:none}
+
+/* ANIMATIONS */
+@keyframes kenburns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-2.5%,-1.8%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes arrowPulse{0%,100%{transform:scaleX(.6);opacity:.4}50%{transform:scaleX(1);opacity:1}}
+@keyframes scrollDown{0%{transform:scaleY(0);transform-origin:top;opacity:1}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom;opacity:.2}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--gold2)}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .home-feat{grid-template-columns:1fr;gap:52px;padding:64px 36px}
+  .ab-cols{grid-template-columns:1fr 1fr}
+  .ab-col:nth-child(3){grid-column:1/-1;border-right:none;border-top:1px solid var(--border)}
+}
+@media(max-width:768px){
+  nav{padding:20px 24px}
+  .s1-scroll{right:24px}
+  .s2-portrait{display:none}
+  .s2-content{padding:0 7% 0 6%}
+  .s3-content{padding:88px 6%}
+  .index-reel{padding:56px 0}
+  .reel-hd{padding:0 24px;margin-bottom:28px}
+  .reel-track{padding:0 24px}
+  .reel-item{width:210px}
+  .disciplines{padding:56px 24px}
+  .dg{grid-template-columns:1fr}
+  .dc{border-right:none;border-bottom:1px solid var(--border)}
+  .ph{padding:110px 24px 40px}
+  .pf{padding:14px 24px}
+  .pg{grid-template-columns:1fr 1fr}
+  .pc.wide{grid-column:span 2}
+  .ab-hero-content{padding:0 24px 52px}
+  .ab-cols{grid-template-columns:1fr}
+  .ab-col{padding:48px 24px;border-right:none;border-bottom:1px solid var(--border)}
+  .ab-foot{padding:22px 24px;flex-direction:column;gap:10px;text-align:center}
+  .modal-body{padding:0 24px 64px}
+  .modal-nav{padding:18px 24px}
+  .modal-gal{grid-template-columns:1fr}
+  .modal-gal img:first-child,.modal-gal img:nth-child(5),.modal-gal img:nth-child(9){grid-column:1;aspect-ratio:4/3}
+}
+@media(max-width:480px){
+  .pg{grid-template-columns:1fr}
+  .pc.wide{grid-column:1;aspect-ratio:3/4}
+  .s3-big{font-size:clamp(26px,8vw,46px)}
+  .ab-name{font-size:clamp(50px,14vw,100px)}
+  .home-feat{padding:52px 24px}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">Mars<span>.</span>Bansiti</div>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('home');return false;" id="nav-home" class="active" data-en="Home" data-vn="Trang Chủ">Home</a>
+    <a href="#" onclick="showPage('projects');return false;" id="nav-projects" data-en="Projects" data-vn="Dự Án">Projects</a>
+    <a href="#" onclick="showPage('about');return false;" id="nav-about" data-en="About" data-vn="Giới Thiệu">About</a>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">VI</button>
+  </div>
+</nav>
+
+<!-- ========== HOME ========== -->
+<div class="page active" id="page-home">
+
+  <div class="scenes-wrapper" id="sw">
+    <div class="scenes-track" id="st">
+
+      <!-- SCENE 1 -->
+      <div class="scene" id="sc0">
+        <div class="s1-bg"><img src="https://iili.io/qbszOAJ.jpg" alt="Hero"></div>
+        <div class="s1-content">
+          <div class="s1-eye" data-en="Architectural Visualization Specialist" data-vn="Chuyên Gia Trực Quan Hóa Kiến Trúc">Architectural Visualization Specialist</div>
+          <div class="s1-h">Portfolio</div>
+          <div class="s1-sub">Mars Bansiti</div>
+          <div class="s1-vline"></div>
+        </div>
+        <div class="s1-scroll" onclick="nextScene()">
+          <span class="s1-scroll-lbl" data-en="Explore" data-vn="Khám phá">Explore</span>
+          <div class="arr-line"></div>
+          <div class="arr-tip"></div>
+        </div>
+      </div>
+
+      <!-- SCENE 2 -->
+      <div class="scene" id="sc1">
+        <div class="s2-bg"><img src="https://iili.io/qbsfxqu.jpg" alt="Portrait"></div>
+        <div class="s2-grad"></div>
+        <div class="s2-portrait"><img src="https://iili.io/qbsfxqu.jpg" alt="Mars Bansiti"></div>
+        <div class="s2-content">
+          <div class="s2-inner">
+            <div class="s2-num" data-en="02 — INTRODUCTION" data-vn="02 — GIỚI THIỆU">02 — INTRODUCTION</div>
+            <p class="s2-intro" data-en="I'm <strong>Mars Bansiti</strong>, an architect and <em>archviz artist.</em> I bring spaces to life — from concept and structural design to cinematic renders and immersive visualizations, delivered end-to-end." data-vn="Tôi là <strong>Mars Bansiti</strong>, một kiến trúc sư và <em>nghệ sĩ archviz.</em> Tôi thổi hồn vào không gian — từ ý tưởng và thiết kế kết cấu đến render điện ảnh và trực quan hóa đắm chìm, hoàn thiện từ đầu đến cuối.">I'm <strong>Mars Bansiti</strong>, an architect and <em>archviz artist.</em> I bring spaces to life — from concept and structural design to cinematic renders and immersive visualizations, delivered end-to-end.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENE 3 -->
+      <div class="scene" id="sc2">
+        <div class="s3-bg"><img src="https://iili.io/qbsfxqu.jpg" alt="Manifesto"></div>
+        <div class="s3-content">
+          <div class="s3-lbl" data-en="03 — MANIFESTO" data-vn="03 — TU TÂM">03 — MANIFESTO</div>
+          <div class="s3-manifesto">
+            <span class="s3-big" data-en="Architecture is materiality," data-vn="Kiến trúc là vật chất,">Architecture is materiality,</span>
+            <span class="s3-body">
+              <span data-en='<span class="s3-gold">structural clarity</span>, and the poetics of light. Design with precision. On brief. On time.' data-vn='<span class="s3-gold">sự rõ ràng cấu trúc</span>, và thi ca của ánh sáng. Thiết kế với độ chính xác. Đúng yêu cầu. Đúng hạn.'><span class="s3-gold">structural clarity</span>, and the poetics of light. Design with precision. On brief. On time.</span>
+            </span>
+            <br>
+            <span class="s3-body" data-en='Bring spatial ideas and tectonic decisions grounded in craft. <span class="s3-gold">Form and atmosphere</span> are my primary tools to transform a structural concept into lived experience.' data-vn='Đem lại ý tưởng không gian và quyết định kiến tạo bắt nguồn từ nghề thủ công. <span class="s3-gold">Hình thức và bầu không khí</span> là công cụ chính của tôi để biến một khái niệm kết cấu thành trải nghiệm sống.'>Bring spatial ideas and tectonic decisions grounded in craft. <span class="s3-gold">Form and atmosphere</span> are my primary tools to transform a structural concept into lived experience.</span>
+          </div>
+          <div class="s3-sig">
+            <div class="s3-sig-line"></div>
+            <div class="s3-sig-txt" data-en="Mars Bansiti — Lead 3D Artist &amp; ArchViz Specialist" data-vn="Mars Bansiti — Nghệ Sĩ 3D Trưởng &amp; Chuyên Gia ArchViz">Mars Bansiti — Lead 3D Artist &amp; ArchViz Specialist</div>
+          </div>
+        </div>
+        <div class="s3-down" onclick="scrollBelow()">
+          <div class="s3-down-line"></div>
+          <span class="s3-down-lbl" data-en="Works" data-vn="Dự Án">Works</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sarr prev hidden" id="arr-prev" onclick="prevScene()">
+      <svg viewBox="0 0 14 14"><polyline points="9,1 3,7 9,13"/></svg>
+    </div>
+    <div class="sarr next" id="arr-next" onclick="nextScene()">
+      <svg viewBox="0 0 14 14"><polyline points="5,1 11,7 5,13"/></svg>
+    </div>
+    <div class="scene-dots">
+      <div class="sdot active" onclick="goScene(0)"></div>
+      <div class="sdot" onclick="goScene(1)"></div>
+      <div class="sdot" onclick="goScene(2)"></div>
+    </div>
+  </div>
+
+  <!-- VERTICAL CONTENT -->
+  <section class="index-reel">
+    <div class="reel-hd reveal">
+      <div class="reel-ttl"><em data-en="Selected" data-vn="Tuyển Chọn">Selected</em> <span data-en="Works" data-vn="Công Trình">Works</span></div>
+      <span class="reel-cnt">28 PROJECTS</span>
+    </div>
+    <div class="reel-track" id="reel-track"></div>
+  </section>
+
+  <section class="home-feat reveal">
+    <div>
+      <div class="fl" data-en="Design Philosophy" data-vn="Triết Lý Thiết Kế">Design Philosophy</div>
+      <h2 class="ft" data-en="Storytelling through <em>light &amp; atmosphere</em>" data-vn="Kể chuyện qua <em>ánh sáng &amp; không gian</em>">Storytelling through <em>light &amp; atmosphere</em></h2>
+      <p class="fb" data-en="Every architectural image is a script. I don't just reproduce drawings — I engineer perception: how light speaks about material, how shadow creates depth, and how atmosphere evokes emotion before the first brick is laid." data-vn="Mỗi hình ảnh kiến trúc là một kịch bản. Tôi không chỉ tái hiện bản vẽ — tôi kiến tạo nhận thức: cách ánh sáng kể về vật liệu, cách bóng tối tạo chiều sâu, và cách không khí gợi lên cảm xúc.">Every architectural image is a script. I don't just reproduce drawings — I engineer perception: how light speaks about material, how shadow creates depth, and how atmosphere evokes emotion before the first brick is laid.</p>
+      <div class="fcta" onclick="showPage('projects')" data-en="View all projects" data-vn="Xem tất cả dự án">View all projects</div>
+    </div>
+    <div class="fg">
+      <img src="https://iili.io/qsLJZb9.jpg" alt="">
+      <img src="https://iili.io/qLWb444.jpg" alt="">
+      <img src="https://iili.io/qLXOS24.jpg" alt="">
+    </div>
+  </section>
+
+  <section class="disciplines reveal">
+    <div class="fl" data-en="Disciplines" data-vn="Lĩnh Vực">Disciplines</div>
+    <div class="dg">
+      <div class="dc"><div class="dn">01</div><div class="dt" data-en="Architectural Visualization" data-vn="Trực Quan Hóa Kiến Trúc">Architectural Visualization</div><p class="db" data-en="Photorealistic rendering from massing to final cinematic output — using 3ds Max and Corona Renderer to faithfully represent materials, natural light, and urban atmosphere." data-vn="Render photorealistic từ massing đến output điện ảnh cuối cùng.">Photorealistic rendering from massing to final cinematic output — using 3ds Max and Corona Renderer to faithfully represent materials, natural light, and urban atmosphere.</p></div>
+      <div class="dc"><div class="dn">02</div><div class="dt" data-en="Market Narrative Strategy" data-vn="Chiến Lược Thị Trường">Market Narrative Strategy</div><p class="db" data-en="Translating technical briefs into market narratives — positioning projects as premium products for investors and developers across Vietnam, the Netherlands, and beyond." data-vn="Chuyển đổi yêu cầu kỹ thuật thành câu chuyện thị trường.">Translating technical briefs into market narratives — positioning projects as premium products for investors and developers across Vietnam, the Netherlands, and beyond.</p></div>
+      <div class="dc"><div class="dn">03</div><div class="dt" data-en="Tropical &amp; Dutch Expertise" data-vn="Nhiệt Đới &amp; Hà Lan">Tropical &amp; Dutch Expertise</div><p class="db" data-en="Deep expertise in two contrasting architectural languages: Vietnamese tropical modernism and contemporary Dutch housing — each demanding distinct lighting and material techniques." data-vn="Chuyên sâu về hai ngôn ngữ kiến trúc đối lập: chủ nghĩa hiện đại nhiệt đới Việt Nam và nhà ở Hà Lan đương đại.">Deep expertise in two contrasting architectural languages: Vietnamese tropical modernism and contemporary Dutch housing — each demanding distinct lighting and material techniques.</p></div>
+    </div>
+  </section>
+
+  <div class="mq-bar"><div class="mq-inner" id="mq"></div></div>
+
+</div><!-- /home -->
+
+<!-- ========== PROJECTS ========== -->
+<div class="page" id="page-projects">
+  <div class="ph">
+    <div class="ph-row">
+      <div class="ph-ttl"><span data-en="Selected" data-vn="Tuyển Chọn">Selected</span><em data-en="Works" data-vn="Công Trình">Works</em></div>
+      <div class="ph-stat"><div class="ph-n">28</div><div class="ph-l" data-en="Projects" data-vn="Dự Án">Projects</div></div>
+    </div>
+  </div>
+  <div class="pf">
+    <button class="fbtn active" data-filter="all" data-en="All" data-vn="Tất Cả">All</button>
+    <button class="fbtn" data-filter="vietnam" data-en="Vietnam" data-vn="Việt Nam">Vietnam</button>
+    <button class="fbtn" data-filter="netherlands" data-en="Netherlands" data-vn="Hà Lan">Netherlands</button>
+    <button class="fbtn" data-filter="hcmc" data-en="Ho Chi Minh City" data-vn="Hồ Chí Minh">Ho Chi Minh City</button>
+    <button class="fbtn" data-filter="danang" data-en="Da Nang" data-vn="Đà Nẵng">Da Nang</button>
+    <button class="fbtn" data-filter="amsterdam" data-en="Amsterdam" data-vn="Amsterdam">Amsterdam</button>
+  </div>
+  <div class="pg" id="proj-grid"></div>
+</div>
+
+<!-- ========== ABOUT ========== -->
+<div class="page" id="page-about">
+  <div class="ab-hero">
+    <div class="ab-hero-bg"><img src="https://iili.io/qbsfxqu.jpg" alt="Mars Bansiti"></div>
+    <div class="ab-hero-content">
+      <div class="ab-pre" data-en="Lead 3D Artist &amp; Architectural Visualization Specialist" data-vn="Nghệ Sĩ 3D Trưởng &amp; Chuyên Gia Trực Quan Hóa Kiến Trúc">Lead 3D Artist &amp; Architectural Visualization Specialist</div>
+      <div class="ab-name">Mars<span class="ab-name-sub">Bansiti</span></div>
+      <div class="ab-tagline" data-en="5+ Years · India · Vietnam · Germany · Netherlands" data-vn="5+ Năm · Ấn Độ · Việt Nam · Đức · Hà Lan">5+ Years · India · Vietnam · Germany · Netherlands</div>
+    </div>
+  </div>
+
+  <div class="ab-cols">
+    <div class="ab-col">
+      <div class="ab-col-lbl" data-en="Profile" data-vn="Giới Thiệu">Profile</div>
+      <p class="ab-bio" data-en="An architect and architectural visualization specialist with <strong>5+ years of international experience</strong> across India, Vietnam, Germany, and the Netherlands. Skilled in transforming architectural concepts into high-quality, <em>photorealistic visuals</em> for residential, commercial, and international design projects.<br><br>Strong focus on <strong>lighting, composition, and storytelling</strong> through visuals, with proven experience working with global studios and cross-cultural teams." data-vn="Kiến trúc sư và chuyên gia trực quan hóa kiến trúc với <strong>5+ năm kinh nghiệm quốc tế</strong> tại Ấn Độ, Việt Nam, Đức và Hà Lan. Thành thạo biến đổi các khái niệm kiến trúc thành hình ảnh <em>photorealistic chất lượng cao</em> cho các dự án nhà ở, thương mại và thiết kế quốc tế.<br><br>Tập trung mạnh vào <strong>ánh sáng, bố cục và kể chuyện</strong> qua hình ảnh, với kinh nghiệm làm việc cùng các studio toàn cầu và đội ngũ đa văn hóa.">An architect and architectural visualization specialist with <strong>5+ years of international experience</strong> across India, Vietnam, Germany, and the Netherlands. Skilled in transforming architectural concepts into high-quality, <em>photorealistic visuals</em> for residential, commercial, and international design projects.<br><br>Strong focus on <strong>lighting, composition, and storytelling</strong> through visuals, with proven experience working with global studios and cross-cultural teams.</p>
+      <blockquote class="ab-quote" data-en='"Every render is a decision about what to feel — not just what to see."' data-vn='"Mỗi render là một quyết định về điều gì cần cảm nhận — không chỉ là điều gì cần nhìn thấy."'>"Every render is a decision about what to feel — not just what to see."</blockquote>
+      <div class="ab-cbar">
+        <div class="ab-clbl" data-en="Contact" data-vn="Liên Hệ">Contact</div>
+        <div class="ab-email">marsbansiti@gmail.com</div>
+        <a class="ab-elink" href="mailto:marsbansiti@gmail.com" data-en="Send a message" data-vn="Gửi tin nhắn">Send a message</a>
+      </div>
+    </div>
+
+    <div class="ab-col">
+      <div class="ab-col-lbl" data-en="Experience" data-vn="Kinh Nghiệm">Experience</div>
+      <div class="tl-item"><div class="tl-per">Dec 2024 – Feb 2026</div><div class="tl-studio">Fjord Arkitekter Studio</div><div class="tl-role" data-en="3D Artist / ArchViz Specialist" data-vn="Nghệ Sĩ 3D / Chuyên Gia ArchViz">3D Artist / ArchViz Specialist</div><div class="tl-loc">Netherlands</div></div>
+      <div class="tl-item"><div class="tl-per">Apr 2023 – Sep 2024</div><div class="tl-studio">Nordic Civic Architects</div><div class="tl-role" data-en="3D Artist / Architectural Visualizer" data-vn="Nghệ Sĩ 3D / Trực Quan Hóa Kiến Trúc">3D Artist / Architectural Visualizer</div><div class="tl-loc">Denmark</div></div>
+      <div class="tl-item"><div class="tl-per">Nov 2021 – Mar 2023</div><div class="tl-studio">Gardern Studio</div><div class="tl-role" data-en="3D Artist" data-vn="Nghệ Sĩ 3D">3D Artist</div><div class="tl-loc">Hanoi, Vietnam</div></div>
+      <div class="tl-item"><div class="tl-per">Nov 2020 – Mar 2022</div><div class="tl-studio">Nhà Xinh Design Studio</div><div class="tl-role" data-en="3D Artist" data-vn="Nghệ Sĩ 3D">3D Artist</div><div class="tl-loc">Ho Chi Minh City, Vietnam</div></div>
+      <div class="tl-item"><div class="tl-per">Nov 2019 – Aug 2020</div><div class="tl-studio">Yuconvr Studio</div><div class="tl-role" data-en="3D Artist" data-vn="Nghệ Sĩ 3D">3D Artist</div><div class="tl-loc">Ho Chi Minh City, Vietnam</div></div>
+      <div class="tl-item"><div class="tl-per">May 2019 – Dec 2019</div><div class="tl-studio">ArchWiz Studio</div><div class="tl-role" data-en="Freelance 3D Artist" data-vn="Nghệ Sĩ 3D Tự Do">Freelance 3D Artist</div><div class="tl-loc">India</div></div>
+    </div>
+
+    <div class="ab-col">
+      <div class="ab-col-lbl" data-en="Skills &amp; Education" data-vn="Kỹ Năng &amp; Học Vấn">Skills &amp; Education</div>
+      <div class="sk-blk">
+        <div class="sk-lbl" data-en="Software" data-vn="Phần Mềm">Software</div>
+        <div class="sk-tags">
+          <span class="sk-tag">3ds Max</span><span class="sk-tag">SketchUp</span><span class="sk-tag">AutoCAD</span><span class="sk-tag">Corona Renderer</span><span class="sk-tag">V-Ray</span><span class="sk-tag">Photoshop</span><span class="sk-tag">Forest Pack</span><span class="sk-tag">RailClone</span>
+        </div>
+      </div>
+      <div class="sk-blk">
+        <div class="sk-lbl" data-en="Expertise" data-vn="Chuyên Môn">Expertise</div>
+        <div class="sk-tags">
+          <span class="sk-tag" data-en="Composition &amp; Lighting" data-vn="Bố Cục &amp; Ánh Sáng">Composition &amp; Lighting</span>
+          <span class="sk-tag" data-en="Material Creation" data-vn="Tạo Vật Liệu">Material Creation</span>
+          <span class="sk-tag" data-en="Retouching" data-vn="Hậu Kỳ">Retouching</span>
+          <span class="sk-tag" data-en="Tropical Architecture" data-vn="Kiến Trúc Nhiệt Đới">Tropical Architecture</span>
+          <span class="sk-tag" data-en="Dutch Housing" data-vn="Nhà Ở Hà Lan">Dutch Housing</span>
+          <span class="sk-tag" data-en="Cinematic Rendering" data-vn="Render Điện Ảnh">Cinematic Rendering</span>
+        </div>
+      </div>
+      <div class="sk-blk">
+        <div class="sk-lbl" data-en="Education" data-vn="Học Vấn">Education</div>
+        <div class="edu-item"><div class="edu-nm">CEPT University</div><div class="edu-dt">B.Arch, 2017</div></div>
+        <div class="edu-item"><div class="edu-nm">SMEC Labs</div><div class="edu-dt" data-en="Diploma in Architectural Visualization, 2018" data-vn="Bằng Trực Quan Hóa Kiến Trúc, 2018">Diploma in Architectural Visualization, 2018</div></div>
+        <div class="edu-item"><div class="edu-nm">SOA Academy</div><div class="edu-dt" data-en="Masterclass in ArchViz" data-vn="Lớp Thạc Sĩ ArchViz">Masterclass in ArchViz</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ab-foot">
+    <div class="ab-foot-copy" data-en="© 2025 Mars Bansiti. All rights reserved." data-vn="© 2025 Mars Bansiti. Bảo lưu mọi quyền.">© 2025 Mars Bansiti. All rights reserved.</div>
+    <div class="ab-foot-tools">3ds Max · Corona Renderer · Photoshop · Forest Pack · RailClone</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-back" id="modal-back" onclick="closeModal()"></div>
+<div class="modal" id="modal">
+  <div class="modal-nav">
+    <div class="modal-tag" id="modal-tag"></div>
+    <div class="modal-x" onclick="closeModal()" data-en="Close ✕" data-vn="Đóng ✕">Close ✕</div>
+  </div>
+  <div class="modal-body">
+    <div class="modal-ttl" id="modal-ttl"></div>
+    <div class="modal-meta" id="modal-meta"></div>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-gal" id="modal-gal"></div>
+  </div>
+</div>
+
+<script>
+const projects=[
+  {id:1,index:"001",en:"Strata Frame Residences",vn:"Strata Frame Residences",location:"Amsterdam, Netherlands",region:"netherlands",subregion:"amsterdam",studio:"Fjord Arkitekter Studio",tools:"3ds Max · Corona Renderer",thumb:"https://iili.io/qsLJZb9.jpg",images:["https://iili.io/qsLJZb9.jpg","https://iili.io/qsLJPUl.jpg","https://iili.io/qsLJLRS.jpg"],en_desc:"A contemporary mid-rise residential tower defined by a bold external structural exoskeleton. The project explores the relationship between structure and transparency, where the façade becomes both a visual identity and a structural expression. The visualization objective was atmospheric storytelling — culminating in cinematic rainy-night renders.",vn_desc:"Tòa nhà căn hộ cao tầng đương đại được định nghĩa bởi khung kết cấu ngoại thất táo bạo. Dự án khám phá mối quan hệ giữa kết cấu và tính minh bạch.",wide:true},
+  {id:2,index:"002",en:"Terra Urban Residences",vn:"Terra Urban Residences",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLWb444.jpg",images:["https://iili.io/qLWb444.jpg","https://iili.io/qLWbw2p.jpg","https://iili.io/qLWbpGj.jpg","https://iili.io/qLWmd8B.jpg","https://iili.io/qLWpJiG.jpg"],en_desc:"A mixed-use response to the high-density constraints of Ho Chi Minh City, utilizing a layered cantilevered system and positioning the building as a premium, breathable product for young urban professionals.",vn_desc:"Phản hồi đa năng cho những hạn chế mật độ cao của Thành phố Hồ Chí Minh. Hệ thống cantilevered nhiều lớp.",wide:false},
+  {id:3,index:"003",en:"Terracotta Veil House",vn:"Nhà Màn Đất Nung",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLXOS24.jpg",images:["https://iili.io/qLXOS24.jpg","https://iili.io/qLXetoX.jpg","https://iili.io/qLXOBI9.jpg","https://iili.io/qLXeBvp.jpg","https://iili.io/qLXg8oN.jpg"],en_desc:"A reinterpretation of the traditional Vietnamese 'nhà phố' into a climate-responsive sanctuary. A 'breathing skin' — a porous, layered boundary negotiating the intense tropical heat while maintaining an emotional connection to the street.",vn_desc:"Tái diễn giải nhà phố truyền thống của Việt Nam thành một nơi trú ẩn thích ứng với khí hậu.",wide:false},
+  {id:4,index:"004",en:"The K Residence",vn:"Nhà K",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLjlJwv.jpg",images:["https://iili.io/qLjcp8g.jpg","https://iili.io/qLjlJwv.jpg","https://iili.io/qLjc1CN.jpg","https://iili.io/qLjcoQV.jpg"],en_desc:"An Urban Courtyard House that reimagines the narrow Vietnamese 'tube house' as a vertical courtyard. Strategic voids and balconies solve the triple challenge: heat overexposure, lack of privacy, and poor ventilation.",vn_desc:"Ngôi nhà sân vườn đô thị tái hiện hình thức nhà ống hẹp của Việt Nam thành sân vườn thẳng đứng.",wide:false},
+  {id:5,index:"005",en:"Brick Vault House",vn:"Nhà Vòm Gạch",location:"Hoi An, Vietnam",region:"vietnam",subregion:"vietnam",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLwudpp.jpg",images:["https://iili.io/qLwudpp.jpg","https://iili.io/qLwul3b.jpg"],en_desc:"A contemporary reinterpretation of Hoi An's masonry heritage. Sacred arch geometry and traditional terracotta create a dual-volume identity balancing introverted privacy with the monumental texture of a perforated brick crown.",vn_desc:"Tái diễn giải đương đại về di sản xây dựng gạch của Hội An.",wide:false},
+  {id:6,index:"006",en:"Sunlit Garden House",vn:"Nhà Hoa Nắng",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLNKzrB.jpg",images:["https://iili.io/qLNKzrB.jpg","https://iili.io/qLNKCLx.jpg","https://iili.io/qLNKqzb.jpg","https://iili.io/qLNFfPp.jpg"],en_desc:"A vertical ecosystem where sunlight, vegetation, and daily routines merge — visualizing 'Soft Tropical Modernism,' shifting from designing static forms to curating life scenes.",vn_desc:"Hệ sinh thái thẳng đứng nơi ánh nắng và thực vật hòa quyện — trực quan hóa Chủ nghĩa Hiện đại Nhiệt đới Mềm.",wide:true},
+  {id:7,index:"007",en:"Sunlight Neo-Classical Villa",vn:"Biệt Thự Tân Cổ Điển Ánh Dương",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLNmXEX.jpg",images:["https://iili.io/qLNm7rg.jpg","https://iili.io/qLNmXEX.jpg","https://iili.io/qLNDXtI.jpg","https://iili.io/qLNDRwB.jpg","https://iili.io/qLNpH3g.jpg","https://iili.io/qLNmpG1.jpg"],en_desc:"A luxury developer product satisfying the high-net-worth Vietnamese market's desire for European prestige while addressing tropical livability — selling aspiration, not just architecture.",vn_desc:"Sản phẩm sang trọng đáp ứng thị trường Việt Nam cao cấp. Câu chuyện thị giác đáp ứng mong muốn uy tín châu Âu.",wide:false},
+  {id:8,index:"008",en:"Wind Vault House",vn:"Nhà Vòm Gió",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLOR52n.jpg",images:["https://iili.io/qLORME7.jpg","https://iili.io/qLOR52n.jpg","https://iili.io/qLORCmv.jpg","https://iili.io/qLOAisS.jpg"],en_desc:"A scalable tropical prototype — a repeatable architectural language for high-density coastal Vietnamese cities, with soft geometric forms and a high-performance 'climate skin.'",vn_desc:"Nguyên mẫu nhiệt đới có thể mở rộng, định vị như ngôn ngữ kiến trúc lặp lại.",wide:false},
+  {id:9,index:"009",en:"Zen Light Townhouse",vn:"Nhà Phố Thiền Ánh Sáng",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLgi26P.jpg",images:["https://iili.io/qLgiUKP.jpg","https://iili.io/qLgi26P.jpg","https://iili.io/qLgi8iB.jpg","https://iili.io/qLgiODx.jpg"],en_desc:"Selling a feeling, not a house. Composition and light replace traditional ornament — curating an atmosphere of quiet luxury inside Da Nang's dense urban fabric.",vn_desc:"Bán cảm xúc, không chỉ bán ngôi nhà. Bố cục và ánh sáng thay thế đồ trang trí truyền thống.",wide:false},
+  {id:10,index:"010",en:"Layered Eco-Townhouse",vn:"Nhà Phố Sinh Thái Tầng Lớp",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLrx0YP.jpg",images:["https://iili.io/qLrzcoG.jpg","https://iili.io/qLrxMTg.jpg","https://iili.io/qLrx0YP.jpg","https://iili.io/qLrxYEQ.jpg","https://iili.io/qLrxAhb.jpg"],en_desc:"A functional ecological envelope — every floor becomes a climatic filter: each slab is a garden, each balcony is a buffer, each plant zone is a thermal regulator.",vn_desc:"Phong bì sinh thái chức năng. Mỗi tầng trở thành bộ lọc khí hậu.",wide:true},
+  {id:11,index:"011",en:"The Green Flow House",vn:"Nhà Phố Dòng Chảy Xanh",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLD0R1a.jpg",images:["https://iili.io/qLD1zv4.jpg","https://iili.io/qLD0a7R.jpg","https://iili.io/qLD0R1a.jpg","https://iili.io/qLD0neV.jpg","https://iili.io/qLD0K0b.jpg"],en_desc:"Space sculpted as a continuous landscape — a building that behaves like a natural river or rice terrace, rooted in Vietnamese spatial memory rather than imported Western minimalism.",vn_desc:"Không gian được tạo hình như cảnh quan liên tục — công trình hoạt động như dòng sông tự nhiên.",wide:false},
+  {id:12,index:"012",en:"An Phuc Neoclassical Townhouse",vn:"Nhà Phố Tân Cổ Điển An Phúc",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLpeTI1.jpg",images:["https://iili.io/qLpeTI1.jpg","https://iili.io/qLpO0xe.jpg","https://iili.io/qLpexkB.jpg","https://iili.io/qLpO1Wu.jpg","https://iili.io/qLpetTP.jpg","https://iili.io/qLpkXwP.jpg","https://iili.io/qLpk4tt.jpg"],en_desc:"The 'Vietnamized Neoclassical' — compressing classical proportions vertically while integrating tropical necessities. A contextually grounded premium home rather than blindly copied French architecture.",vn_desc:"Tân Cổ Điển Việt Nam — nén tỷ lệ cổ điển theo chiều dọc trong khi tích hợp vườn trên mái nhiệt đới.",wide:false},
+  {id:13,index:"013",en:"The Peaceful Retreat",vn:"An Nhiên Viên",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qLyMvDJ.jpg",images:["https://iili.io/qLyjF2V.jpg","https://iili.io/qLyhiBf.jpg","https://iili.io/qLyh4Xs.jpg","https://iili.io/qLyXOH7.jpg","https://iili.io/qLyXYcN.jpg","https://iili.io/qLyMvDJ.jpg","https://iili.io/qLyMOHF.jpg"],en_desc:"Modern Form, Vietnamese Soul. A Contemporary Tropical hybrid balancing global aesthetic trends with natural ventilation and the Vietnamese preference for layered privacy.",vn_desc:"Hình thức hiện đại, tâm hồn Việt Nam. Giải pháp chiến lược cho thách thức đô thị Việt Nam.",wide:true},
+  {id:14,index:"014",en:"Tropical Light Townhouse",vn:"Nhà Phố Ánh Nhiệt Đới",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQ99tcJ.jpg",images:["https://iili.io/qQ9HdMX.jpg","https://iili.io/qQ99in1.jpg","https://iili.io/qQ99tcJ.jpg","https://iili.io/qQ9HIV9.png"],en_desc:"A climate-adaptive urban living prototype — moving beyond the technical render to design perception, controlling how a client emotionally experiences light, ventilation, and greenery.",vn_desc:"Nguyên mẫu sống đô thị thích ứng với khí hậu. Vượt ra ngoài render kỹ thuật để thiết kế nhận thức.",wide:false},
+  {id:15,index:"015",en:"Sky Garden Townhouse",vn:"Nhà Phố Vườn Trên Cao",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQVmwKP.jpg",images:["https://iili.io/qQVmOUF.jpg","https://iili.io/qQVmwKP.jpg","https://iili.io/qQVmcl9.jpg","https://iili.io/qQVmGNj.jpg"],en_desc:"A Vertical Garden Living System where architecture and landscape are inseparable, addressing heat gain, lack of greenery, privacy, and narrow frontage.",vn_desc:"Hệ thống sống vườn thẳng đứng nơi kiến trúc và cảnh quan không thể tách rời.",wide:false},
+  {id:16,index:"016",en:"The Interwoven Brick House",vn:"Nhà Phố Gạch Giao Thoa",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQWyydP.jpg",images:["https://iili.io/qQX9HkF.jpg","https://iili.io/qQWyydP.jpg","https://iili.io/qQWyimu.jpg","https://iili.io/qQWySql.jpg"],en_desc:"A 'Material Narrative' celebrating the artisanal heritage of Vietnamese brickwork — replacing the typical closed-off concrete facade with a breathable, hand-crafted envelope.",vn_desc:"Câu chuyện vật liệu tôn vinh di sản thủ công gạch Việt Nam.",wide:false},
+  {id:17,index:"017",en:"Tropical Sunlight Townhouse",vn:"Nhà Phố Ánh Nắng Nhiệt Đới",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQhw4Ns.jpg",images:["https://iili.io/qQhw4Ns.jpg","https://iili.io/qQhwSSt.jpg","https://iili.io/qQhjea9.jpg","https://iili.io/qQhjw4S.jpg","https://iili.io/qQhjjG2.jpg","https://iili.io/qQhjhCl.jpg"],en_desc:"Architecture as Thermal Infrastructure. Soft, organic curves facilitate wind flow and reduce harsh solar shadows. A triple-layered living facade where greenery and structural depth function as primary thermal infrastructure.",vn_desc:"Kiến trúc như hạ tầng nhiệt. Đường cong mềm mại tạo điều kiện lưu thông không khí.",wide:true},
+  {id:18,index:"018",en:"Tropical Terracotta House",vn:"Nhà Phố Mái Ngói Nhiệt Đới",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQj3g2f.jpg",images:["https://iili.io/qQj3g2f.jpg","https://iili.io/qQj3SrG.jpg","https://iili.io/qQj34kl.jpg","https://iili.io/qQj3jmN.jpg"],en_desc:"A sophisticated fusion reinterpreting the traditional Vietnamese mái ngói (terracotta roof tile) — fragmented terracotta surfaces, CNC-cut metal screens, and integrated greenery solve the modern tube house crisis.",vn_desc:"Kết hợp tinh tế tái diễn giải mái ngói đất nung trong nhà phố thẳng đứng hiện đại.",wide:false},
+  {id:19,index:"019",en:"Forest Edge Living Zeist",vn:"Bosrand Wonen Zeist",location:"Zeist, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Yuconvr Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQjWEOJ.jpg",images:["https://iili.io/qQjVySn.jpg","https://iili.io/qQjWH9s.jpg","https://iili.io/qQjVDPI.jpg","https://iili.io/qQjV48g.jpg","https://iili.io/qQjWYKP.jpg","https://iili.io/qQjWEOJ.jpg"],en_desc:"Rooted in Dutch planning philosophy where landscape is the primary structure — buildings are not merely adjacent to the forest but physically and visually intertwined with the woodland canopy.",vn_desc:"Bắt nguồn từ triết lý quy hoạch Hà Lan nơi cảnh quan là cấu trúc chính.",wide:false},
+  {id:20,index:"020",en:"Courtyard of the Timber District",vn:"Hof van Houtwijk",location:"Haarlem, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Yuconvr Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQjshuf.jpg",images:["https://iili.io/qQjsaQp.jpg","https://iili.io/qQjs14t.jpg","https://iili.io/qQjsxEP.jpg","https://iili.io/qQjsHE7.jpg","https://iili.io/qQjshuf.jpg","https://iili.io/qQjssnV.jpg"],en_desc:"The classic Dutch Hofje reinterpreted — balancing high-density urban requirements with the intimacy of semi-private social spaces, creating Human-Scale Urbanism in Haarlem.",vn_desc:"Hofje Hà Lan cổ điển được tái diễn giải — cân bằng mật độ cao với sự thân mật của không gian xã hội.",wide:false},
+  {id:21,index:"021",en:"Prosperity Breeze Townhouse",vn:"Nhà Phố Lộc Phong",location:"Ho Chi Minh City, Vietnam",region:"vietnam",subregion:"hcmc",studio:"Nhà Xinh Design Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQOuj7p.jpg",images:["https://iili.io/qQOAzyN.jpg","https://iili.io/qQOuj7p.jpg","https://iili.io/qQOuakB.jpg","https://iili.io/qQOu7dQ.jpg","https://iili.io/qQOuRrx.jpg"],en_desc:"Architecture as a Climate Machine. Vertical timber slats, layered green terraces, and curved concrete frames work in unison to filter sunlight, facilitate airflow, and create a 'breathable' urban sanctuary.",vn_desc:"Kiến trúc như máy khí hậu. Thanh gỗ, bậc thang xanh và khung bê tông cong lọc ánh nắng và tạo điều kiện lưu thông.",wide:false},
+  {id:22,index:"022",en:"The House of Tranquility",vn:"An Nhiên House",location:"Da Nang, Vietnam",region:"vietnam",subregion:"danang",studio:"Gardern Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQSmT5G.jpg",images:["https://iili.io/qQSmT5G.jpg","https://iili.io/qQUHRa9.jpg","https://iili.io/qQUH24I.jpg","https://iili.io/qQU9Umb.jpg","https://iili.io/qQU9XIf.jpg","https://iili.io/qQU9G7n.jpg","https://iili.io/qQSp5va.jpg","https://iili.io/qQSmhXV.jpg","https://iili.io/qQSmAb4.jpg"],en_desc:"Moving beyond 'clean' realism to capture the specific atmospheric humidity, material aging, and cultural lifestyle patterns that define modern life in Đà Nẵng.",vn_desc:"Vượt ra ngoài chủ nghĩa hiện thực sạch để nắm bắt độ ẩm khí quyển và lão hóa vật liệu của Đà Nẵng.",wide:true},
+  {id:23,index:"023",en:"De Lindehof Residences",vn:"De Lindehof Residences",location:"Amersfoort, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Fjord Arkitekter Studio",tools:"3ds Max · Corona Renderer · RailClone",thumb:"https://iili.io/qQ6B5wQ.jpg",images:["https://iili.io/qQ6B5wQ.jpg","https://iili.io/qQ6qVQS.jpg","https://iili.io/qQ6fDB9.jpg","https://iili.io/qQ63BRV.jpg","https://iili.io/qQ6qj4e.jpg","https://iili.io/qQ6npnV.jpg","https://iili.io/qQ6oRAG.jpg","https://iili.io/qQ6omRs.jpg","https://iili.io/qQ6okKP.jpg","https://iili.io/qQ6IXNs.jpg","https://iili.io/qQ6A8UN.jpg","https://iili.io/qQ6T67t.jpg"],en_desc:"Contemporary Dutch DNA. A mid-rise development merging traditional Dutch gabled forms with modern volumetric articulation. As Project Lead, massing was broken into 'house-like' volumes ensuring human scale while achieving high-density goals.",vn_desc:"DNA Hà Lan đương đại. Phát triển tầm trung kết hợp hình thức gable Hà Lan với khớp nối thể tích hiện đại.",wide:false},
+  {id:24,index:"024",en:"TRIÁS Havenkwartier Residences",vn:"TRIÁS Havenkwartier",location:"Rotterdam, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Yuconvr Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQP0Prg.jpg",images:["https://iili.io/qQP04B1.jpg","https://iili.io/qQP0LYJ.jpg","https://iili.io/qQP0Prg.jpg","https://iili.io/qQP0yBt.jpg","https://iili.io/qQP1fTl.jpg","https://iili.io/qQP1x4e.jpg","https://iili.io/qQP1cCP.jpg","https://iili.io/qQP1Vyv.jpg"],en_desc:"Rotterdam Waterfront Living. Stepped volumes and cantilevered balconies ensure every unit maintains a direct connection to the Maas River — merging high-density housing with water ecology.",vn_desc:"Sống ven sông Rotterdam. Kết hợp nhà ở mật độ cao với sinh thái nước.",wide:true},
+  {id:25,index:"025",en:"De Lindehof Residences (Utrecht)",vn:"De Lindehof Utrecht",location:"Utrecht, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Fjord Arkitekter Studio",tools:"3ds Max · Corona Renderer · Photoshop",thumb:"https://iili.io/qQiHbNS.jpg",images:["https://iili.io/qQiFi8J.jpg","https://iili.io/qQi3LL7.jpg","https://iili.io/qQi3lWP.jpg","https://iili.io/qQi37OQ.jpg","https://iili.io/qQidC74.jpg","https://iili.io/qQiJIfa.jpg","https://iili.io/qQiHbNS.jpg","https://iili.io/qQiHLlf.jpg","https://iili.io/qQiH6Vn.jpg","https://iili.io/qQPysXn.jpg","https://iili.io/qQPbmdB.jpg","https://iili.io/qQPbWJI.jpg"],en_desc:"A full-spectrum visualization pipeline rooted in Dutch urban living principles: density, nature integration, and human-scale design. Not just visualizing buildings — building belief.",vn_desc:"Quy trình trực quan hóa toàn diện bắt nguồn từ các nguyên tắc sống đô thị Hà Lan.",wide:false},
+  {id:26,index:"026",en:"Het Veemhof Wonen",vn:"Het Veemhof Wonen",location:"Amsterdam, Netherlands",region:"netherlands",subregion:"amsterdam",studio:"Yuconvr Studio",tools:"3ds Max · Corona Renderer · RailClone",thumb:"https://iili.io/qQsIUu9.jpg",images:["https://iili.io/qQsIUu9.jpg","https://iili.io/qQsInrQ.jpg"],en_desc:"Community-First Housing Systems rooted in post-industrial Amsterdam typology — a rational, modular architectural language where construction logic is celebrated rather than hidden.",vn_desc:"Hệ thống nhà ở ưu tiên cộng đồng bắt nguồn từ hình thức Amsterdam hậu công nghiệp.",wide:false},
+  {id:27,index:"027",en:"De Waterweide Residences",vn:"De Waterweide",location:"Utrecht, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Fjord Arkitekter Studio",tools:"3ds Max · Corona Renderer · Forest Pack",thumb:"https://iili.io/qQLb5j1.jpg",images:["https://iili.io/qQLmQWX.jpg","https://iili.io/qQLb5j1.jpg","https://iili.io/qQLbqQe.jpg","https://iili.io/qQLDDhX.jpg","https://iili.io/qQLDShF.jpg","https://iili.io/qQLZ9rQ.jpg"],en_desc:"New-Generation Dutch Typology — balancing medium-density urban requirements with a 'village-like' community feel. Demonstrating Human-Scale Street Activation in the water-rich context of Utrecht.",vn_desc:"Hình thức Hà Lan thế hệ mới. Cân bằng mật độ trung bình với cảm giác cộng đồng làng mạc.",wide:false},
+  {id:28,index:"028",en:"De Groene Erfwoningen",vn:"De Groene Erfwoningen",location:"Amersfoort, Netherlands",region:"netherlands",subregion:"netherlands",studio:"Yuconvr Studio",tools:"3ds Max · Corona Renderer · Forest Pack · RailClone",thumb:"https://iili.io/qQQGJXj.jpg",images:["https://iili.io/qQQXqMJ.jpg","https://iili.io/qQQWiy7.jpg","https://iili.io/qQQVwzu.jpg","https://iili.io/qQQVcWG.jpg","https://iili.io/qQQMOcN.jpg","https://iili.io/qQQGJXj.jpg","https://iili.io/qQQEaxj.jpg","https://iili.io/qQQcNF1.jpg","https://iili.io/qQQcMwx.jpg","https://iili.io/qQQYJKF.jpg","https://iili.io/qQQ73j2.jpg","https://iili.io/qQQ5EL7.jpg","https://iili.io/qQQROiX.jpg"],en_desc:"Living in the Modern Dutch Barn. Water-sensitive design, human-scale density, and material honesty — wood, brick, and thatch reinterpretation — merging into a unified residential system rooted in Dutch ecological urbanism.",vn_desc:"Sống trong nông trại Hà Lan hiện đại. Thiết kế nhạy cảm với nước và vật liệu trung thực.",wide:true}
+];
+
+/* LANGUAGE */
+let lang='en';
+function toggleLang(){lang=lang==='en'?'vn':'en';document.getElementById('lang-btn').textContent=lang==='en'?'VI':'EN';applyLang();}
+function applyLang(){document.querySelectorAll('[data-en]').forEach(el=>{const v=lang==='en'?el.dataset.en:el.dataset.vn;if(v!==undefined)el.innerHTML=v;});renderReel();renderGrid(cf);}
+
+/* PAGE NAV */
+let cp='home';
+function showPage(n){
+  if(cp===n)return;
+  const o=document.getElementById('page-'+cp),nx=document.getElementById('page-'+n);
+  o.classList.add('exit');setTimeout(()=>o.classList.remove('active','exit'),600);
+  nx.classList.add('active');nx.scrollTop=0;cp=n;
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const el=document.getElementById('nav-'+n);if(el)el.classList.add('active');
+  if(n==='projects')renderGrid(cf);
+  setTimeout(initReveal,120);
+}
+
+/* SCENES */
+let cs=0;
+function goScene(n){
+  cs=Math.max(0,Math.min(n,2));
+  document.getElementById('st').style.transform=`translateX(-${cs*33.333}%)`;
+  document.querySelectorAll('.sdot').forEach((d,i)=>d.classList.toggle('active',i===cs));
+  document.getElementById('arr-prev').classList.toggle('hidden',cs===0);
+  document.getElementById('arr-next').classList.toggle('hidden',cs===2);
+}
+function nextScene(){goScene(cs+1);}
+function prevScene(){goScene(cs-1);}
+function scrollBelow(){document.getElementById('page-home').scrollTo({top:window.innerHeight,behavior:'smooth'});}
+document.querySelector('.s1-scroll').addEventListener('click',nextScene);
+(function(){
+  const w=document.getElementById('sw');let sx=0,sy=0;
+  w.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  w.addEventListener('touchend',e=>{const dx=sx-e.changedTouches[0].clientX,dy=Math.abs(sy-e.changedTouches[0].clientY);if(Math.abs(dx)>44&&Math.abs(dx)>dy){dx>0?nextScene():prevScene();}},{passive:true});
+  document.addEventListener('keydown',e=>{if(cp!=='home')return;if(e.key==='ArrowRight')nextScene();if(e.key==='ArrowLeft')prevScene();});
+})();
+
+/* REEL */
+function renderReel(){
+  const t=document.getElementById('reel-track');
+  t.innerHTML=projects.map(p=>`<div class="reel-item" onclick="openModal(${p.id})"><img class="reel-img" src="${p.thumb}" alt="" loading="lazy"><div class="reel-ov"></div><div class="reel-info"><div class="reel-idx">${p.index}</div><div class="reel-name">${lang==='en'?p.en:p.vn}</div><div class="reel-loc">${p.location}</div></div></div>`).join('');
+  initDrag(t);
+}
+function initDrag(el){
+  let d=false,sx=0,sl=0;
+  el.addEventListener('mousedown',e=>{d=true;sx=e.pageX-el.offsetLeft;sl=el.scrollLeft;el.classList.add('grab');});
+  el.addEventListener('mouseleave',()=>{d=false;el.classList.remove('grab');});
+  el.addEventListener('mouseup',()=>{d=false;el.classList.remove('grab');});
+  el.addEventListener('mousemove',e=>{if(!d)return;e.preventDefault();el.scrollLeft=sl-(e.pageX-el.offsetLeft-sx)*1.25;});
+}
+
+/* GRID */
+let cf='all';
+function renderGrid(f){
+  cf=f;const g=document.getElementById('proj-grid');
+  const l=f==='all'?projects:projects.filter(p=>p.region===f||p.subregion===f);
+  g.innerHTML=l.map(p=>`<div class="pc${p.wide?' wide':''}" onclick="openModal(${p.id})"><img src="${p.thumb}" alt="" loading="lazy"><div class="pc-ov"></div><div class="pc-info"><div class="pc-idx">${p.index}</div><div class="pc-name">${lang==='en'?p.en:p.vn}</div><div class="pc-sub">${p.location}</div><div class="pc-tag">${p.studio}</div></div></div>`).join('');
+}
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',function(){document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('active'));this.classList.add('active');renderGrid(this.dataset.filter);});
+});
+
+/* MODAL */
+function openModal(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  document.getElementById('modal-tag').textContent='PROJECT '+p.index;
+  document.getElementById('modal-ttl').innerHTML=`<em>${lang==='en'?p.en:p.vn}</em>`;
+  document.getElementById('modal-meta').innerHTML=`<div class="mm">${lang==='en'?'Location':'Địa Điểm'}<strong>${p.location}</strong></div><div class="mm">${lang==='en'?'Studio':'Studio'}<strong>${p.studio}</strong></div><div class="mm">${lang==='en'?'Role':'Vai Trò'}<strong>${lang==='en'?'Lead 3D Artist':'Nghệ Sĩ 3D Trưởng'}</strong></div><div class="mm">${lang==='en'?'Tools':'Công Cụ'}<strong>${p.tools}</strong></div>`;
+  document.getElementById('modal-desc').textContent=lang==='en'?p.en_desc:p.vn_desc;
+  document.getElementById('modal-gal').innerHTML=p.images.map(s=>`<img src="${s}" alt="" loading="lazy">`).join('');
+  document.getElementById('modal-back').classList.add('open');
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal').scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modal-back').classList.remove('open');document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+/* MARQUEE */
+(function(){const items=['3ds Max','Corona Renderer','Architectural Visualization','Amsterdam','Ho Chi Minh City','Đà Nẵng','Rotterdam','Utrecht','Lead 3D Artist','5+ Years International','28 Projects','4 Countries'];const s=items.map(t=>`<span>${t}</span><span class="sep">◆</span>`).join('');document.getElementById('mq').innerHTML=s+s;})();
+
+/* CURSOR */
+const C=document.getElementById('cur'),R=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;C.style.left=mx+'px';C.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;R.style.left=rx+'px';R.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.reel-item,.pc,.fcta,.sarr,.sdot,.ab-elink,.s1-scroll,.s3-down,.nav-logo,.dc,.tl-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{C.style.width='4px';C.style.height='4px';R.style.width='52px';R.style.height='52px';});
+  el.addEventListener('mouseleave',()=>{C.style.width='8px';C.style.height='8px';R.style.width='38px';R.style.height='38px';});
+});
+
+/* REVEAL */
+function initReveal(){
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>{el.classList.remove('visible');obs.observe(el);});
+}
+
+/* INIT */
+renderReel();renderGrid('all');initReveal();applyLang();
+</script>
+</body>
+</html>
